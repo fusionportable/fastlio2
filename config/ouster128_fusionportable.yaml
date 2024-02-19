@@ -1,6 +1,6 @@
 common:
     lid_topic:  "/os_cloud_node/points"
-    imu_topic:  "/os_cloud_node/imu/data_raw"
+    imu_topic:  "/stim300/imu/data_raw"
     time_sync_en: false         # ONLY turn on when external time synchronization is really not possible
     time_offset_lidar_to_imu: 0.0 # Time offset between lidar and IMU calibrated by other algorithms, e.g. LI-Init (can be found in README).
                                   # This param will take effect no matter what time_sync_en is. So if the time offset is not known exactly, please set as 0.0
@@ -9,21 +9,20 @@ preprocess:
     lidar_type: 3                # 1 for Livox serials LiDAR, 2 for Velodyne LiDAR, 3 for ouster LiDAR, 
     scan_line: 128
     timestamp_unit: 3                 # 0-second, 1-milisecond, 2-microsecond, 3-nanosecond.
-    blind: 4
+    blind: 0.5
 
-mapping:
-    acc_cov: 0.1
-    gyr_cov: 0.1
-    b_acc_cov: 0.0001
-    b_gyr_cov: 0.0001
+mapping:  # 100x of origin
+    acc_cov: 0.23777720518818246
+    gyr_cov: 5.6210762686976616e-03
+    b_acc_cov: 1.0885363217411185e-03
+    b_gyr_cov: 6.615657812411791e-05
     fov_degree:    180
-    det_range:     150.0
+    det_range:     150
     extrinsic_est_en:  false      # true: enable the online estimation of IMU-LiDAR extrinsic
-    extrinsic_T: [ 0.0, 0.0, 0.0 ]
-    extrinsic_R: [1, 0, 0,
-                  0, 1, 0,
-                  0, 0, 1]
-
+    extrinsic_T: [-0.035980, 0.017385, -0.033028]
+    extrinsic_R: [0.999958, -0.008314, -0.003705,   
+                  0.008309, 0.999964, -0.001335,
+                  0.003716, 0.001304, 0.999992]
 publish:
     path_en:  true
     scan_publish_en:  true       # false: close all the point cloud output
