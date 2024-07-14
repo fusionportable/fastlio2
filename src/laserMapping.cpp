@@ -94,6 +94,7 @@ int    iterCount = 0, feats_down_size = 0, NUM_MAX_ITERATIONS = 0, laserCloudVal
 bool   point_selected_surf[100000] = {0};
 bool   lidar_pushed, flg_first_scan = true, flg_exit = false, flg_EKF_inited;
 bool   scan_pub_en = false, dense_pub_en = false, scan_body_pub_en = false;
+bool   time_scan_beg = true;
 
 vector<vector<int>>  pointSearchInd_surf; 
 vector<BoxPointType> cub_needrm;
@@ -373,8 +374,12 @@ bool sync_packages(MeasureGroup &meas)
     /*** push a lidar scan ***/
     if(!lidar_pushed)
     {
-        meas.lidar = lidar_buffer.front();
-        meas.lidar_beg_time = time_buffer.front();
+        meas.lidar = lidar_buffer.front();\
+        // NOTE(gogojjh): This condition is added for the fusionportable dataset
+        if (time_scan_beg)
+            meas.lidar_beg_time = time_buffer.front();
+        else
+            meas.lidar_beg_time = time_buffer.front() - meas.lidar->points.back().curvature / double(1000);
         if (meas.lidar->points.size() <= 1) // time too little
         {
             lidar_end_time = meas.lidar_beg_time + lidar_mean_scantime;
@@ -778,6 +783,7 @@ int main(int argc, char** argv)
     nh.param<int>("preprocess/scan_line", p_pre->N_SCANS, 16);
     nh.param<int>("preprocess/timestamp_unit", p_pre->time_unit, US);
     nh.param<int>("preprocess/scan_rate", p_pre->SCAN_RATE, 10);
+    nh.param<bool>("preprocess/time_scan_beg", time_scan_beg, true);
     nh.param<int>("point_filter_num", p_pre->point_filter_num, 2);
     nh.param<bool>("feature_extract_enable", p_pre->feature_enabled, false);
     nh.param<bool>("runtime_pos_log_enable", runtime_pos_log, 0);
